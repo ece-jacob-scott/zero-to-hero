@@ -11,8 +11,11 @@ HTML as far as languages go.
 
 ## Stack Rundown
 
-Server Side: PHP
-Client Side: HTMX
-Styling: Tailwind
-Database: MySQL
-Server: Nginx
+- Server Side: PHP
+- Client Side: HTMX
+- Styling: Tailwind
+- Database: MySQL
+- Server: Nginx
+
+## TODOS 
+- [ ] Make mysql in docker work 
