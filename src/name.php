@@ -2,38 +2,52 @@
 <p class="text-red-500">
 Hello
 <?php
-// error_log("dir: " . __DIR__);
-// require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/../libraries/errors.php";
 
-// use Simplon\Mysql\PDOConnector;
-// require_once "mysql/mysql-connector-php";
-// require_once "/usr/lib/php/20210902/mysqli.so";
-// require_once "mysqli.so";
+// check for HTMX header
+if ($_SERVER["HTTP_HX_REQUEST"] != "true") {
+  error_log("HX-Request header not found");
 
-// $host = "localhost";
-$host = "172.19.0.2";
-$user = "root";
-$password = "pass";
-$database = "hero";
+  header("Location: /");
 
-$conn = new PDO("mysql:host=$host;dbname=$database", $user, $password);
+  return;
+}
 
-// $pdo = new PDOConnector(
-//   $host,
-//   $user,
-//   $password,
-//   $database
-// );
+use SQLite3;
 
-// $pdoConn = $pdo->connect("utf8", []);
-
-// $db = new Manager($host, $database, $user, $password);
+$database = new SQLite3(__DIR__ . "/test.db");
 
 error_log("Connected successfully");
 
-// $db->disconnect();
+$name = $_POST["name"];
 
-echo $_POST["name"];
+// create names table if one doesn't exist
+$database->query("CREATE TABLE IF NOT EXISTS names (name TEXT)");
+
+// check if name already exists
+$statement = $database->prepare("SELECT * FROM names WHERE name = :name");
+$statement->bindValue(":name", $name);
+$results = $statement->execute();
+
+$array_results = $results->fetchArray();
+
+// return the name
+if ($array_results) {
+  error_log("Name already exists");
+  // echo $results->fetchArray()[0];
+  $database->close();
+
+  echo $array_results[0];
+} else {
+  $statement = $database->prepare("INSERT INTO names (name) VALUES (:name)");
+  $statement->bindValue(":name", $name);
+
+  $results = $statement->execute();
+
+  $database->close();
+
+  echo $name;
+}
 ?>
 !
 </p>

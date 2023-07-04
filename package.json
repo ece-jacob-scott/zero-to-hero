@@ -1,0 +1,16 @@
+{
+  "name": "zero-to-hero",
+  "version": "1.0.0",
+  "description": "As an excersize I wanted to learn how PHP works and try out some modern tools with it as well (HTMX & Tailwind). I missed the PHP boom of the 2000's and I think it's a cool technology so I figured I would check it out. I called this repo Zero To Hero because I think that this stack would probably get you from \"I learned how to code in college\" to \"I'm making a product\" in the least amount of time. There is no client side javascript thanks to HTMX and there is no custom css thanks to tailwind. All anyone would need to learn is PHP and HTML as far as languages go.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.19.6",
+    "prettier": "^2.8.8"
+  }
+}
