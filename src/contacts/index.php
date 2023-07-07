@@ -55,6 +55,7 @@ if ($search) {
 }
 
 while ($contact = $results->fetchArray(SQLITE3_ASSOC)) {
+
   // display each contact
   // echo "<p>" . $row["email"] . "</p>";
   $id = $contact["id"];
@@ -62,19 +63,22 @@ while ($contact = $results->fetchArray(SQLITE3_ASSOC)) {
   $first_name = $contact["first_name"];
   $last_name = $contact["last_name"];
   $phone_number = $contact["phone"];
+  ?>
 
-  echo "<tr>";
-  echo "<td class='text-left px-6 py-3'>$first_name</td>";
-  echo "<td class='text-left px-6 py-3'>$last_name</td>";
-  echo "<td class='text-left px-6 py-3'>$phone_number</td>";
-  echo "<td class='text-left px-6 py-3'>$email</td>";
-  echo "<td class=''>";
-  echo "<div class='flex flex-row items-center justify-end'>";
-  echo "<a class='hover:cursor-pointer hover:text-red-700 font-semibold' href='/contacts/edit.php?id=$id'>Edit</a>";
-  echo "<span class='mx-2'>|</span>";
-  echo "<a class='hover:cursor-pointer hover:text-red-700 font-semibold' href='/contacts/view.php?id=$id'>View</a></td>";
-  echo "</div>";
-  echo "</tr>";
+  <tr>
+    <td class='text-left px-6 py-3'><?php echo $first_name; ?></td>
+    <td class='text-left px-6 py-3'><?php echo $last_name; ?></td>
+    <td class='text-left px-6 py-3'><?php echo $phone_number; ?></td>
+    <td class='text-left px-6 py-3'><?php echo $email; ?></td>
+    <td class=''>
+      <div class='flex flex-row items-center justify-end'>
+        <a class='hover:cursor-pointer hover:text-red-700 font-semibold' href='/contacts/edit.php?id=<?php echo $id; ?>'>Edit</a>
+        <span class='mx-2'>|</span>
+        <a class='hover:cursor-pointer hover:text-red-700 font-semibold' href='/contacts/view.php?id=<?php echo $id; ?>'>View</a>
+      </div>
+    </td>
+  </tr>
+<?php
 }
 ?>
         </tbody>
