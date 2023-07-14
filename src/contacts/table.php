@@ -12,7 +12,7 @@
 
 <?php
 // check for database connection
-if (!$database) {
+if (!isset($database) || !$database) {
   $database = new SQLite3(__DIR__ . "/../../test.db");
 }
 
@@ -20,19 +20,35 @@ error_log("Connected successfully");
 
 // check for search query in request arguments
 $search = $_GET["q"];
+$page = $_GET["page"];
+
+if (!$page) {
+  $page = 0;
+}
 
 if ($search) {
   error_log("Searching for $search");
   // query the database for contacts matching the search query
   $statement = $database->prepare(
-    "SELECT * FROM contacts WHERE first_name LIKE :search"
+    "SELECT * FROM contacts WHERE first_name LIKE :search LIMIT 5 OFFSET :offset"
   );
   $statement->bindValue(":search", "%$search%");
+  $statement->bindValue(":offset", $page * 5);
   $results = $statement->execute();
 } else {
   // query the database for all contacts
-  $results = $database->query("SELECT * FROM contacts");
+  $statement = $database->prepare(
+    "SELECT * FROM contacts LIMIT 5 OFFSET :offset"
+  );
+  $statement->bindValue(":offset", $page * 5);
+  $results = $statement->execute();
 }
+
+$n_rows = 0;
+while ($results->fetchArray(SQLITE3_ASSOC)) {
+  $n_rows++;
+}
+$results->reset();
 
 while ($contact = $results->fetchArray(SQLITE3_ASSOC)) {
 
@@ -60,5 +76,18 @@ while ($contact = $results->fetchArray(SQLITE3_ASSOC)) {
 <?php
 }
 ?>
+<?php if ($n_rows == 5) { ?> 
+  <tr>
+    <td colspan="5" style="text-align: center">
+      <button class="bg-red-500 hover:bg-red-700 border-red-500 hover:border-red-700 text-sm border-4 text-white py-1 px-2 rounded"
+              hx-target="closest tr"
+              hx-swap="outerHTML"
+              hx-select="tbody > tr"
+              hx-get="/contacts?page=<?php echo $page + 1; ?>">
+        Load More
+      </button>
+    </td>
+  </tr>
+<?php } ?>
     </tbody>
 </table>

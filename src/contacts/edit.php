@@ -33,10 +33,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $error_message = "Phone number is required";
   }
 
+  $database = new SQLite3(__DIR__ . "/../../test.db");
+
+  // check if the email is already in use
+  $statement = $database->prepare(
+    "SELECT * FROM contacts WHERE email = :email AND id != :id"
+  );
+  $statement->bindValue(":email", $email);
+  $statement->bindValue(":id", $contact_id);
+  $results = $statement->execute();
+
+  $contact = $results->fetchArray(SQLITE3_ASSOC);
+
+  if ($contact) {
+    $error_message = "Email is already in use";
+    $database->close();
+  }
+
   // if there was no error, update the contact
   if ($error_message == "") {
-    $database = new SQLite3(__DIR__ . "/../../test.db");
-
+    // update the contact
     $statement = $database->prepare(
       "UPDATE contacts SET email = :email, first_name = :first_name, last_name = :last_name, phone = :phone WHERE id = :id"
     );
@@ -77,12 +93,14 @@ $phone_number = $contact["phone"];
 
 <div class="w-1/2 mx-auto">
 
-<?php // if there was an error, print the error message
-
-if ($error_message != "") {
-  echo "<p class='w-full py-1 px-2 text-red-700 font-semibold'>Error: $error_message</p>";
-  $database->close();
-} ?>
+<p id="error-container"
+   class="w-full py-1 px-2 text-red-700 font-semibold <?php if (
+     $error_message == ""
+   ) {
+     echo "hidden";
+   } ?>">
+   Error: <?php echo $error_message; ?>
+</p>
 
 <form action="/contacts/edit.php?id=<?php echo $contact_id; ?>" method="post"> 
     <fieldset>
@@ -94,7 +112,11 @@ if ($error_message != "") {
              class="border w-full text-gray-700 py-1 px-2" 
              id="email" 
              type="email" 
-             value="<?php echo $email; ?>"> 
+             value="<?php echo $email; ?>" 
+             hx-get="/contacts/email.php?id=<?php echo $contact_id; ?>"
+             hx-target="#error-container"
+             hx-swap="outerHTML"
+             hx-trigger="change, keyup delay:200ms changed">
       <div class=p-2></div>
 
       <input name="first_name" 
@@ -131,11 +153,14 @@ if ($error_message != "") {
 
 <div class=p-1></div>
 
-<form action="/contacts/delete.php?id=<?php echo $contact_id; ?>" method="post">
-    <button class="w-full flex-shrink-0 bg-red-500 hover:bg-red-700 border-red-500 hover:border-red-700 text-sm border-4 text-white py-1 px-2 rounded uppercase" type="submit">
-      Delete Contact
-    </button>
-</form>
+<button 
+    hx-delete="/contacts/delete.php?id=<?php echo $contact_id; ?>"
+    hx-target="body"
+    hx-push-url="true"
+    hx-confirm="Are you sure you want to delete this contact?"
+    class="w-full flex-shrink-0 bg-red-500 hover:bg-red-700 border-red-500 hover:border-red-700 text-sm border-4 text-white py-1 px-2 rounded uppercase" type="submit">
+  Delete Contact
+</button>
 
 <p>
     <a href="/contacts" class="hover:cursor-pointer hover:text-red-700 font-semibold">Back</a>

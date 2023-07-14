@@ -1,5 +1,5 @@
 <?php include "../../components/header.php"; ?>
-<div class="w-1/2 mx-auto">
+<div class="w-full md:w-3/4 mx-auto">
   <h1 class="text-red-400 text-2xl">Contacts</h1>
   <hr class="h-px mb-8 bg-gray-200 border-0 dark:bg-gray-700"/>
   <!--Search Term Form-->
