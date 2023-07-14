@@ -4,6 +4,7 @@
 
 
 $contact_id = $_GET["id"];
+$error_message = "";
 // get contact from the database
 
 if (!$contact_id) {

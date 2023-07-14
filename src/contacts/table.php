@@ -22,7 +22,7 @@ error_log("Connected successfully");
 $search = $_GET["q"];
 $page = $_GET["page"];
 
-if (!$page) {
+if (!$page || $page < 0 || !is_numeric($page) || $page == "") {
   $page = 0;
 }
 
